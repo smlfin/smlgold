@@ -46,19 +46,19 @@ function calculateEligibility() {
     const weight = parseFloat(document.getElementById('goldWeight').value);
     const marketRate = parseFloat(document.getElementById('marketRate').value);
     
-    // Elements to display results
+    // Get element references
+    const glAmountElement = document.getElementById('glAmount');
+    const plAmountElement = document.getElementById('plAmount');
+    const monthlyGlInterestElement = document.getElementById('monthlyGlInterest');
+    const monthlyPlInterestElement = document.getElementById('monthlyPlInterest');
+    
     const resultElements = {
         selectedScheme: document.getElementById('selectedScheme'),
         glRateDisplay: document.getElementById('glRateDisplay'),
         plRateDisplay: document.getElementById('plRateDisplay'),
-        glAmount: document.getElementById('glAmount'),
-        plAmount: document.getElementById('plAmount'),
         totalLTV: document.getElementById('totalLTV'),
         eligibleAmount: document.getElementById('eligibleAmount'),
         monthlyInterest: document.getElementById('monthlyInterest'),
-        // NEW: Separate monthly interest display elements
-        monthlyGlInterest: document.getElementById('monthlyGlInterest'), 
-        monthlyPlInterest: document.getElementById('monthlyPlInterest')
     };
 
     // Update display for scheme and rates
@@ -70,13 +70,18 @@ function calculateEligibility() {
     if (!isFinite(weight) || weight <= 0 || !isFinite(marketRate) || marketRate <= 0) {
         // Reset financial results to zero
         const zero = formatCurrency(0);
-        resultElements.glAmount.textContent = zero;
-        resultElements.plAmount.textContent = zero;
+        glAmountElement.textContent = zero;
+        
+        // --- Reset PL Elements to default zero state ---
+        plAmountElement.textContent = zero;
+        plAmountElement.style.fontSize = ''; // Reset custom style
+        plAmountElement.style.color = ''; // Reset custom style
+        
         resultElements.totalLTV.textContent = `${currentScheme.totalLTV}%`;
         resultElements.eligibleAmount.textContent = zero;
         resultElements.monthlyInterest.textContent = zero;
-        resultElements.monthlyGlInterest.textContent = zero; // Reset
-        resultElements.monthlyPlInterest.textContent = zero; // Reset
+        monthlyGlInterestElement.textContent = zero; 
+        monthlyPlInterestElement.textContent = zero; 
         return;
     }
 
@@ -87,7 +92,6 @@ function calculateEligibility() {
     const eligibleAmount = glAmount + plAmount;
 
     // 3. Calculate Monthly Interest Split
-    
     const glRateDecimal = currentScheme.glInterestRate / 100;
     const plRateDecimal = currentScheme.plInterestRate / 100;
     
@@ -98,14 +102,34 @@ function calculateEligibility() {
     const monthlyInterest = glMonthlyInterest + plMonthlyInterest;
     
     // 4. Display Results
-    resultElements.glAmount.textContent = formatCurrency(glAmount);
-    resultElements.plAmount.textContent = formatCurrency(plAmount);
+    
+    // --- CONDITIONAL PL DISPLAY LOGIC ---
+    if (plAmount === 0) {
+        // PL amount: Display custom text and set style for emphasis
+        plAmountElement.textContent = 'NO PL option for this scheme';
+        plAmountElement.style.fontSize = '1em'; 
+        plAmountElement.style.color = '#d9534f'; 
+        
+        // Monthly PL Interest: Display N/A
+        monthlyPlInterestElement.textContent = 'N/A';
+        
+    } else {
+        // PL amount: Display formatted currency and reset styling
+        plAmountElement.textContent = formatCurrency(plAmount);
+        plAmountElement.style.fontSize = ''; // Use CSS default/class style
+        plAmountElement.style.color = ''; // Use CSS default/class style
+        
+        // Monthly PL Interest: Display formatted currency
+        monthlyPlInterestElement.textContent = formatCurrency(plMonthlyInterest);
+    }
+    // --- END CONDITIONAL PL DISPLAY LOGIC ---
+
+    glAmountElement.textContent = formatCurrency(glAmount);
     resultElements.totalLTV.textContent = `${currentScheme.totalLTV}%`;
     resultElements.eligibleAmount.textContent = formatCurrency(eligibleAmount);
     
-    // Display Monthly Interest Split-up
-    resultElements.monthlyGlInterest.textContent = formatCurrency(glMonthlyInterest);
-    resultElements.monthlyPlInterest.textContent = formatCurrency(plMonthlyInterest);
+    // Display GL Interest (always a value)
+    monthlyGlInterestElement.textContent = formatCurrency(glMonthlyInterest);
 
     // Display Total Monthly Interest
     resultElements.monthlyInterest.textContent = formatCurrency(monthlyInterest);
