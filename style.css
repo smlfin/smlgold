@@ -1,0 +1,154 @@
+/* General Body and Layout */
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern, clean font */
+    margin: 0; 
+    padding: 20px 10px; /* Padding for mobile view */
+    background-color: #f0f2f5; /* Light grey background */
+    color: #333;
+    min-height: 100vh;
+}
+.calculator-container { 
+    max-width: 480px; /* Slightly wider for modern phones */
+    margin: 0 auto; 
+    padding: 25px; 
+    border: none; 
+    border-radius: 12px; /* Smoother corners */
+    background-color: #ffffff; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Elevated shadow */
+}
+h2 { 
+    text-align: center; 
+    color: #004a99; /* Deep blue for corporate tone */
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+h3 {
+    margin-top: 0;
+    color: #004a99;
+}
+h4 {
+    color: #555; /* Subtle section heading */
+    font-weight: 600;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+/* Input Styles */
+label { 
+    display: block; 
+    margin-top: 15px; 
+    font-weight: 500; 
+    color: #555; 
+    font-size: 0.95em;
+}
+input[type="number"] { 
+    width: 100%; 
+    padding: 12px; /* Taller input fields for touch */
+    margin-top: 8px; 
+    border: 1px solid #cceeff; /* Light blue border */
+    border-radius: 8px; 
+    box-sizing: border-box; 
+    font-size: 16px; 
+    transition: border-color 0.3s;
+}
+input[type="number"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+/* Scheme Buttons (Enhanced Touch Target) */
+.scheme-group { 
+    margin: 25px 0 15px 0; 
+    display: flex; 
+    justify-content: space-between; 
+    gap: 8px; 
+}
+.scheme-button { 
+    flex-grow: 1; 
+    padding: 12px 5px; /* Taller buttons */
+    border: 2px solid #007bff; 
+    border-radius: 8px; 
+    background-color: #ffffff; 
+    color: #007bff; 
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    font-size: 13px; 
+    font-weight: 600;
+    text-align: center; 
+}
+.scheme-button:hover:not(.selected) { 
+    background-color: #f0f8ff; 
+    box-shadow: 0 2px 5px rgba(0, 123, 255, 0.1);
+}
+.scheme-button.selected { 
+    background-color: #007bff; 
+    color: white; 
+    border-color: #0056b3; 
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3); /* Highlight selection */
+}
+
+/* Result Box (Highlighting/Tone) */
+.result-box { 
+    margin-top: 30px; 
+    padding: 20px; 
+    border: 1px solid #d4edda; 
+    border-radius: 10px; 
+    background-color: #e6f7ff; /* Very light blue background for results */
+}
+.result-box p { 
+    margin: 8px 0; 
+    line-height: 1.5; 
+}
+hr {
+    border: 0;
+    height: 1px;
+    background-color: #ccc;
+    margin: 15px 0;
+}
+
+/* HIGHLY Visible Result Elements (Highlighting Key Figures) */
+.result-box strong { 
+    color: #004a99; /* Primary result color */
+    font-size: 1.1em; 
+}
+.eligibility-amount { 
+    color: #28a745; /* Green for Total Loan Amount */
+    font-size: 1.6em; 
+    font-weight: bold; 
+    display: block;
+    margin-top: 5px;
+}
+
+/* Portion Highlighting */
+.gl-portion { 
+    color: #0056b3; /* Deep Blue */
+}
+.pl-portion { 
+    color: #d9534f; /* Red/Orange for clear distinction */
+}
+
+/* Total Monthly Interest Highlight */
+#monthlyInterest {
+    color: #ff6600; /* Bright Orange for crucial monthly payment */
+    font-size: 1.6em;
+    font-weight: 800;
+}
+
+/* Individual Interest Split Amounts */
+#monthlyGlInterest, #monthlyPlInterest {
+    font-size: 1.05em;
+    font-weight: 700 !important;
+}
+
+/* NEW: Flexbox Alignment for Interest Breakdown */
+.interest-line {
+    display: flex;
+    justify-content: space-between; /* Pushes the rate/amount to the right */
+    align-items: center;
+    margin: 8px 0;
+    line-height: 1.5;
+}
+.interest-line strong {
+    white-space: nowrap; /* Ensures rate stays on one line */
+}
