@@ -46,22 +46,19 @@ function calculateEligibility() {
     const weight = parseFloat(document.getElementById('goldWeight').value);
     const marketRate = parseFloat(document.getElementById('marketRate').value);
     
-    // 1b. Get reference to the new PL percentage display span
-    const plPercentageDisplayElement = document.getElementById('plPercentageDisplay');
-    
-    // Get element references
-    const glAmountElement = document.getElementById('glAmount');
-    const plAmountElement = document.getElementById('plAmount');
-    const monthlyGlInterestElement = document.getElementById('monthlyGlInterest');
-    const monthlyPlInterestElement = document.getElementById('monthlyPlInterest');
-    
+    // Elements to display results
     const resultElements = {
         selectedScheme: document.getElementById('selectedScheme'),
         glRateDisplay: document.getElementById('glRateDisplay'),
         plRateDisplay: document.getElementById('plRateDisplay'),
+        glAmount: document.getElementById('glAmount'),
+        plAmount: document.getElementById('plAmount'),
         totalLTV: document.getElementById('totalLTV'),
         eligibleAmount: document.getElementById('eligibleAmount'),
         monthlyInterest: document.getElementById('monthlyInterest'),
+        // NEW: Separate monthly interest display elements
+        monthlyGlInterest: document.getElementById('monthlyGlInterest'), 
+        monthlyPlInterest: document.getElementById('monthlyPlInterest')
     };
 
     // Update display for scheme and rates
@@ -69,31 +66,17 @@ function calculateEligibility() {
     resultElements.glRateDisplay.textContent = `${currentScheme.glInterestRate}%`;
     resultElements.plRateDisplay.textContent = `${currentScheme.plInterestRate}%`;
 
-    // --- Update Dynamic PL Percentage Display ---
-    if (currentScheme.plPercentage > 0) {
-        plPercentageDisplayElement.textContent = `${currentScheme.plPercentage}%`;
-    } else {
-        // When PL is 0%, default to the original 'PL' label
-        plPercentageDisplayElement.textContent = 'PL';
-    }
-    // -------------------------------------------
-
     // Check for valid financial inputs
     if (!isFinite(weight) || weight <= 0 || !isFinite(marketRate) || marketRate <= 0) {
         // Reset financial results to zero
         const zero = formatCurrency(0);
-        glAmountElement.textContent = zero;
-        
-        // --- Reset PL Elements to default zero state ---
-        plAmountElement.textContent = zero;
-        plAmountElement.style.fontSize = ''; // Reset custom style
-        plAmountElement.style.color = ''; // Reset custom style
-        
+        resultElements.glAmount.textContent = zero;
+        resultElements.plAmount.textContent = zero;
         resultElements.totalLTV.textContent = `${currentScheme.totalLTV}%`;
         resultElements.eligibleAmount.textContent = zero;
         resultElements.monthlyInterest.textContent = zero;
-        monthlyGlInterestElement.textContent = zero; 
-        monthlyPlInterestElement.textContent = zero; 
+        resultElements.monthlyGlInterest.textContent = zero; // Reset
+        resultElements.monthlyPlInterest.textContent = zero; // Reset
         return;
     }
 
@@ -104,6 +87,7 @@ function calculateEligibility() {
     const eligibleAmount = glAmount + plAmount;
 
     // 3. Calculate Monthly Interest Split
+    
     const glRateDecimal = currentScheme.glInterestRate / 100;
     const plRateDecimal = currentScheme.plInterestRate / 100;
     
@@ -114,34 +98,14 @@ function calculateEligibility() {
     const monthlyInterest = glMonthlyInterest + plMonthlyInterest;
     
     // 4. Display Results
-    
-    // --- CONDITIONAL PL DISPLAY LOGIC ---
-    if (plAmount === 0) {
-        // PL amount: Display custom text and set style for emphasis
-        plAmountElement.textContent = 'NO PL option for this scheme';
-        plAmountElement.style.fontSize = '1em'; 
-        plAmountElement.style.color = '#d9534f'; 
-        
-        // Monthly PL Interest: Display N/A
-        monthlyPlInterestElement.textContent = 'N/A';
-        
-    } else {
-        // PL amount: Display formatted currency and reset styling
-        plAmountElement.textContent = formatCurrency(plAmount);
-        plAmountElement.style.fontSize = ''; // Use CSS default/class style
-        plAmountElement.style.color = ''; // Use CSS default/class style
-        
-        // Monthly PL Interest: Display formatted currency
-        monthlyPlInterestElement.textContent = formatCurrency(plMonthlyInterest);
-    }
-    // --- END CONDITIONAL PL DISPLAY LOGIC ---
-
-    glAmountElement.textContent = formatCurrency(glAmount);
+    resultElements.glAmount.textContent = formatCurrency(glAmount);
+    resultElements.plAmount.textContent = formatCurrency(plAmount);
     resultElements.totalLTV.textContent = `${currentScheme.totalLTV}%`;
     resultElements.eligibleAmount.textContent = formatCurrency(eligibleAmount);
     
-    // Display GL Interest (always a value)
-    monthlyGlInterestElement.textContent = formatCurrency(glMonthlyInterest);
+    // Display Monthly Interest Split-up
+    resultElements.monthlyGlInterest.textContent = formatCurrency(glMonthlyInterest);
+    resultElements.monthlyPlInterest.textContent = formatCurrency(plMonthlyInterest);
 
     // Display Total Monthly Interest
     resultElements.monthlyInterest.textContent = formatCurrency(monthlyInterest);
@@ -167,64 +131,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Run the initial calculation 
     calculateEligibility();
-});<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SML Group Loan Calculator</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="calculator-container">
-        <h2>SML Group Gold Loan Calculator</h2>
-        
-        <label for="goldWeight">Gold Weight (Grams):</label>
-        <input type="number" id="goldWeight" placeholder="e.g., 50" min="1">
-
-        <label for="marketRate">Current Market Rate (per Gram):</label>
-        <input type="number" id="marketRate" placeholder="e.g., 6000" min="100">
-
-        <div class="scheme-group">
-            <button class="scheme-button selected" data-scheme="75" data-name="75% LTV Scheme" data-ltv="75" data-pl="0" data-gl-rate="17" data-pl-rate="0">75% LTV Scheme</button>
-            <button class="scheme-button" data-scheme="3Month" data-name="3 Month (90% LTV)" data-ltv="90" data-pl="15" data-gl-rate="22" data-pl-rate="24">3 Month (90% LTV)</button>
-            <button class="scheme-button" data-scheme="4Month" data-name="4 Month (85% LTV)" data-ltv="85" data-pl="10" data-gl-rate="20" data-pl-rate="24">4 Month (85% LTV)</button>
-        </div>
-        
-        <div class="result-box">
-            <h3>✅ Loan Summary</h3>
-            <p>Scheme: <strong id="selectedScheme">75% LTV Scheme</strong></p>
-            <hr>
-            
-            <p>Gold Loan (75%): <strong id="glAmount" class="gl-portion">₹ 0.00</strong></p>
-            <p>Personal Loan (<span id="plPercentageDisplay">PL</span>): <strong id="plAmount" class="pl-portion">₹ 0.00</strong></p>
-            <hr>
-            
-            <p>Total Loan Amount (Principal):</p>
-            <p class="eligibility-amount"><span id="eligibleAmount">₹ 0.00</span> (<span id="totalLTV">0%</span>)</p>
-            <hr>
-            
-            <h4>💰 Monthly Interest Breakdown</h4>
-            <div class="interest-line">
-                GL Interest Rate (Annual): 
-                <strong style="color: #0056b3;"><span id="glRateDisplay">17%</span></strong> 
-                (<span id="monthlyGlInterest" style="color: #0056b3; font-weight: bold;">₹ 0.00</span>)
-            </div>
-            <div class="interest-line">
-                PL Interest Rate (Annual): 
-                <strong style="color: #d9534f;"><span id="plRateDisplay">0%</span></strong>
-                (<span id="monthlyPlInterest" style="color: #d9534f; font-weight: bold;">₹ 0.00</span>)
-            </div>
-            <hr>
-            
-            <p>Total Monthly Interest Payable:</p>
-            <p style="font-size: 1.5em; font-weight: bold; color: #0056b3;">
-                <span id="monthlyInterest">₹ 0.00</span>
-            </p>
-        </div>
-        
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
-
+});
